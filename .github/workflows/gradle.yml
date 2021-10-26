@@ -25,7 +25,7 @@ jobs:
     - name: Grant execute permission for gradlew
       run: cd ./backend; chmod +x gradlew
     - name: Build with Gradle
-      run: cd ./backend; ./gradlew build --scan
+      run: cd ./backend; ./gradlew build --stacktrace
     - name: Discord notification
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
