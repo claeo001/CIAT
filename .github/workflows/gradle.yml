@@ -66,4 +66,3 @@ public class User {private String name; private int age;
               assertThat(user.getAge()).isEqualTo(30);
           }
       }
-
