@@ -31,13 +31,37 @@ jobs:
         DISCORD_USERNAME : overrides the bot nickname.
         DISCORD_AVATAR : overrides the avatar URL.
         DISCORD_EMBEDS : This should be a valid JSON string of an array of
-          {
-          "embeds":[{
-            "title":"Hello!",
-            "description":"Hi! :grinning:"
-          }]
-         }
+            public class User {
+                private String name;
+                private int age;
 
+                public User(String name, int age) {
+                    this.name = name;
+                    this.age = age;
+                }
 
+                public String getName() {
+                    return name;
+                }
+
+                public int getAge() {
+                    return age;
+                }
+            }
+            import static org.assertj.core.api.Assertions.*;
+            import static org.junit.jupiter.api.Assertions.*;
+
+            import org.junit.jupiter.api.DisplayName;
+            import org.junit.jupiter.api.Test;
+
+            class UserTest {
+
+                @DisplayName("생성자 확인")
+                @Test
+                void constructorTest() {
+                    User user = new User("럿고", 28);
+                    assertThat(user.getAge()).isEqualTo(30);
+                }
+            }
     - name: Build with Gradle
       run: cd ./backend; ./gradlew build
