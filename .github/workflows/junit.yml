@@ -28,13 +28,7 @@ jobs:
   
     - name: Discord notification
       uses: Ilshidur/action-discord@master
-      with: |
-            {
-              attachments: [{
-                color: '${{ job.status }}' === 'success' ? 'good' : '${{ job.status }}' === 'failure' ? 'danger' : 'warning',
-                text: `테스트가 실패했습니다.\n프로젝트: ${process.env.AS_REPO}\n작성자: ${process.env.AS_AUTHOR}\n결과: ${process.env.AS_JOB}\n`,
-              }]
-            }
+
       env: 
         DISCORD_USERNAME: PR fail
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
