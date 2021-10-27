@@ -32,14 +32,14 @@ jobs:
       if: success()
       with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          description: "🎉 사이트가 배포되었습니다!"
+          description: "🎉 테스트 되었습니다!"
 
     - name: Discord Alert Failure
       uses: sarisia/actions-status-discord@v1
       if: failure()
       with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          description: "🔥 사이트 배포를 실패하였습니다."      
+          description: "🔥 테스트를 실패하였습니다."      
     - name: test
       run: gradle test -Djasypt.encryptor.password=${{ secrets.KEY }}
     - name: Publish Unit Test Results
