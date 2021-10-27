@@ -26,3 +26,11 @@ jobs:
   
     - name: test
       run: gradle test -Djasypt.encryptor.password=${{ secrets.KEY }}
+    - name: Discord notification
+      if: failure()
+      env:
+        DISCORD_USERNAME: PR fail
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      uses: Ilshidur/action-discord@master
+      with:
+        args: 'The project {{ EVENT_PAYLOAD.repository.full_name }} has been deployed.'
