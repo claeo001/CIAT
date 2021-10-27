@@ -40,5 +40,5 @@ jobs:
             }
             env:
         DISCORD_USERNAME: PR fail
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         if: failure()
