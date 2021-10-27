@@ -24,8 +24,6 @@ jobs:
         server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
         settings-path: ${{ github.workspace }} # location for the settings.xml file
   
-    - name: test
-      run: gradle test -Djasypt.encryptor.password=${{ secrets.KEY }}
     - name: Discord notification
       uses: Ilshidur/action-discord@master
       with:
@@ -42,3 +40,7 @@ jobs:
         DISCORD_USERNAME: PR fail
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         if: failure()
+        
+    - name: test
+      run: gradle test -Djasypt.encryptor.password=${{ secrets.KEY }}
+
