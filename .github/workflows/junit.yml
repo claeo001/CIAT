@@ -25,8 +25,10 @@ jobs:
         distribution: 'adopt'
         server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
         settings-path: ${{ github.workspace }} # location for the settings.xml file
-      
-    
+       
+    - name: test
+      run: gradle test -Djasypt.encryptor.password=${{ secrets.KEY }}
+        
     - name: Discord Alert Success
       uses: sarisia/actions-status-discord@v1
       if: success()
@@ -39,9 +41,8 @@ jobs:
       if: failure()
       with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          description: "🔥 테스트를 실패하였습니다."      
-    - name: test
-      run: gradle test -Djasypt.encryptor.password=${{ secrets.KEY }}
+          description: "🔥 테스트를 실패하였습니다."     
+          
     - name: Publish Unit Test Results
       uses: EnricoMi/publish-unit-test-result-action@v1
       if: ${{ always() }}
