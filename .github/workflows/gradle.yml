@@ -28,6 +28,9 @@ jobs:
       uses: Ilshidur/action-discord@master
       with:
         args: "Hello, beautiful ! I ran a GitHub Actions for you <3"
+        DISCORD_USERNAME (optional): overrides the bot nickname.
+        DISCORD_AVATAR (optional): overrides the avatar URL.
+        DISCORD_EMBEDS (optional): This should be a valid JSON string of an array of
 
     - name: Build with Gradle
       run: cd ./backend; ./gradlew build
