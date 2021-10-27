@@ -26,14 +26,20 @@ jobs:
         server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
         settings-path: ${{ github.workspace }} # location for the settings.xml file
       
-    - name: Discord notification
+    
+    - name: Discord Alert Success
       uses: Ilshidur/action-discord@master
-      env:
-        DISCORD_USERNAME: PR fail
-        DISCORD_AVATAR: https://cdn.shopify.com/s/files/1/1061/1924/files/Hugging_Face_Emoji_2028ce8b-c213-4d45-94aa-21e1a0842b4d_large.png?15202324258887420558
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        if: failure()
-          
+      if: success()
+      with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          description: "🎉 사이트가 배포되었습니다!"
+
+    - name: Discord Alert Failure
+      uses: sarisia/actions-status-discord@v1
+      if: failure()
+      with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          description: "🔥 사이트 배포를 실패하였습니다."      
     - name: test
       run: gradle test -Djasypt.encryptor.password=${{ secrets.KEY }}
     - name: Publish Unit Test Results
