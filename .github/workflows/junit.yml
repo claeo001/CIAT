@@ -27,10 +27,6 @@ jobs:
     - name: test
       run: gradle test -Djasypt.encryptor.password=${{ secrets.KEY }}
     - name: Discord notification
-      if: failure()
-      env:
-        DISCORD_USERNAME: PR fail
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
       uses: Ilshidur/action-discord@master
       with:
         args: '이 프로젝트는 {{ EVENT_PAYLOAD.repository.full_name }} 배포 됐습니다.'
@@ -45,5 +41,6 @@ jobs:
               }]
             }
             env:
-            DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-            if: failure()
+        DISCORD_USERNAME: PR fail
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }
+        if: failure()
