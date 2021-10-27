@@ -34,22 +34,16 @@ jobs:
       uses: Ilshidur/action-discord@master
       with:
         args: '이 프로젝트는 {{ EVENT_PAYLOAD.repository.full_name }} 배포 됐습니다.'
-    - name: if fail  # 만약 실패했을 때의 설정
-      uses: actions/setup-java@v2  # 커스텀 스크립트를 사용하게 해주는 액션
-      with:  # 커스텀 스크립트 작성란
-        github-token: $  # 깃허브 토큰으로 PR을 close시킴
-        script: |
-            const ref = "$"
-            const pull_number = Number(ref.split("/")[2])
-            await github.pulls.createReview({
-              ...context.repo,
-              pull_number,
-              body:"테스트코드를 다시 확인해주세요. ",
-              event: "REQUEST_CHANGES"
-            })
-            await github.pulls.update({
-              ...context.repo,
-              pull_number,
-              state: "closed"
-            })
-        if: failure()  # 실패했다는 이벤트가 발생하면 바로 위의 액션 실행
+     
+        status: custom
+        fields: pull_request
+        custom_payload: |
+            {
+              attachments: [{
+                color: '${{ job.status }}' === 'success' ? 'good' : '${{ job.status }}' === 'failure' ? 'danger' : 'warning',
+                text: `테스트가 실패했습니다.\n프로젝트: ${process.env.AS_REPO}\n작성자: ${process.env.AS_AUTHOR}\n결과: ${process.env.AS_JOB}\n`,
+              }]
+            }
+            env:
+            DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+            if: failure()
