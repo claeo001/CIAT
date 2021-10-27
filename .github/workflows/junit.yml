@@ -28,7 +28,6 @@ jobs:
       uses: Ilshidur/action-discord@master
       with:
         status: custom
-        fields: pull_request
         custom_payload: |
             {
               attachments: [{
