@@ -27,7 +27,7 @@ jobs:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
       uses: Ilshidur/action-discord@master
       with:
-        args: 'The project {{ EVENT_PAYLOAD.repository.full_name }} has been deployed.'
+        args: "Hello, beautiful ! I ran a GitHub Actions for you <3"
 
     - name: Build with Gradle
       run: cd ./backend; ./gradlew build
