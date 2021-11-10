@@ -24,31 +24,28 @@ jobs:
       with:
         java-version: '11'
         distribution: 'adopt'
-        server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
-        settings-path: ${{ github.workspace }} # location for the settings.xml file
-    - name: Install node
-      uses: actions/setup-node@v2
-      with:
-          node-version: '16'
-
-
-    - name: Checkout
-      uses: actions/checkout@v2
-     
-    - name: Install Yarn
-      run: npm install yarn
-    
-    - name: Install dependencies
-      run: yarn install
-          
-    - name: test
-      run: gradle test -Djasypt.encryptor.password=${{ secrets.KEY }}
-        
-    - name: Publish Unit Test Results
-      uses: EnricoMi/publish-unit-test-result-action@v1
-      if: ${{ always() }}
-      with:
-          files: claeo001/CIAT
+      # 추가
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+ 
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+ 
+      - name: Test with Gradle
+        run: ./gradlew --info test
+ 
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: ${{ always() }}
+        with:
+          files: build/test-results/**/*.xml
           
     - name: Discord Alert Success
       uses: sarisia/actions-status-discord@v1
