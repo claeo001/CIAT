@@ -37,10 +37,7 @@ jobs:
     
     - name: Install dependencies
       run: yarn install
-      
-    - name: Run tests
-      run: yarn test:report
-      
+          
     - name: test
       run: gradle test -Djasypt.encryptor.password=${{ secrets.KEY }}
         
@@ -48,7 +45,7 @@ jobs:
       uses: EnricoMi/publish-unit-test-result-action@v1
       if: ${{ always() }}
       with:
-          files: CIAT/backend/gradle/wrapper/gradle-wrapper.jar
+          files: ()
           
     - name: Discord Alert Success
       uses: sarisia/actions-status-discord@v1
