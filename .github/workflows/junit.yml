@@ -23,10 +23,28 @@ jobs:
         distribution: 'adopt'
         server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
         settings-path: ${{ github.workspace }} # location for the settings.xml file
-       
+    
+    - name: Checkout
+      uses: actions/checkout@v2
+     
+    - name: Install Yarn
+      run: npm install yarn
+    
+    - name: Install dependencies
+      run: yarn install
+      
+    - name: Run tests
+      run: yarn test:report
+      
     - name: test
       run: gradle test -Djasypt.encryptor.password=${{ secrets.KEY }}
         
+    - name: Publish Unit Test Results
+      uses: EnricoMi/publish-unit-test-result-action@v1
+      if: ${{ always() }}
+      with:
+          files: build/test-results/**/*.xml
+          
     - name: Discord Alert Success
       uses: sarisia/actions-status-discord@v1
       if: success()
@@ -41,20 +59,6 @@ jobs:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
           description: "🔥 테스트를 실패하였습니다."     
           
-    - name: Publish Unit Test Results
-      uses: EnricoMi/publish-unit-test-result-action@v1
-      if: ${{ always() }}
-      with:
-          files: build/test-results/**/*.xml
-  
-    - name: Test Report
-      uses: dorny/test-reporter@v1
-      if: success() || failure()    # run this step even if previous step failed
-      with: 
-          name: test-results
-          path: junit.xml
-          fail-on-error: 'false'
-          reporter: jest-junit        # Format of test results
-          token: ${{ secrets.GITHUB_TOKEN }}
+
   
 
