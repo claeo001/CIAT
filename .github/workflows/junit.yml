@@ -44,7 +44,7 @@ jobs:
       uses: EnricoMi/publish-unit-test-result-action@v1
       if: ${{ always() }}
       with:
-          files: backend/cicd/dev/**/*.yaml
+          files: backend/gradle/**/*.jar
           
     - name: Discord Alert Success
       uses: sarisia/actions-status-discord@v1
