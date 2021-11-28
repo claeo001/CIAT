@@ -1,64 +1,76 @@
-# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
-
-name: Test
+name: pull request
 
 on:
   push:
     branches:
-      - "master"
+      - develop
+      - master
   pull_request:
-    branches: 
-      - "master"
+    branches:
+      - "**"
 
 jobs:
-  build:
+  docker:
+    timeout-minutes: 10
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./backend      
+
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK 11
-      uses: actions/setup-java@v2
-      with:
-        java-version: '11'
-        distribution: 'adopt'
-      # 추가
-    - name: Cache Gradle packages
-      uses: actions/cache@v2
-      with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
- 
-    - name: Test with Gradle
-      run: ./gradlew --info test
- 
-    - name: Publish Unit Test Results
-      uses: EnricoMi/publish-unit-test-result-action@v1
-      if: ${{ always() }}
-      with:
-          files: backend/**/*.xml
+      # 해당 저장소의 코드를 가져옵니다.
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      # docker-compose를 활용해 테스트를 위한 컨테이너 환경을 구성합니다.
+      - name: Start containers
+        run: docker-compose -f "docker-compose.yml" up -d --build
+
+      # Node 16 버전을 사용합니다.
+      - name: Install node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          cache: 'npm'
+
+      # yarn을 설치합니다.
+      - name: Install Yarn
+        run: npm install yarn
+
+      # 설치된 yarn을 통해 패키지를 설치합니다.
+      - name: Install dependencies
+        run: yarn install
+
+      # 테스트 수행과 그 테스트 결과를 xml파일로 생성합니다.
+      - name: Run tests
+        run: yarn test:report
+
+      # 테스트 결과를 담은 xml 파일을 레포트로 변환합니다.
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          name: test-results
+          path: junit.xml
+          fail-on-error: 'false'
+          reporter: jest-junit        # Format of test results
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # 앞의 작업이 실패/성공과 관계 없이 컨테이너들을 종료합니다.
+      - name: Stop containers
+        if: always()
+        run: docker-compose -f "docker-compose.yml" down
           
-    - name: Discord Alert Success
-      uses: sarisia/actions-status-discord@v1
-      if: success()
-      with:
+      - name: Discord Alert Success
+        uses: sarisia/actions-status-discord@v1
+        if: success()
+        with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
           description: "🎉 테스트 되었습니다!"
 
-    - name: Discord Alert Failure
-      uses: sarisia/actions-status-discord@v1
-      if: failure()
-      with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          description: "🔥 테스트를 실패하였습니다."     
+      - name: Discord Alert Failure
+        uses: sarisia/actions-status-discord@v1
+        if: failure()
+        with:
+            webhook: ${{ secrets.DISCORD_WEBHOOK }}
+            description: "🔥 테스트를 실패하였습니다."     
           
 
   
