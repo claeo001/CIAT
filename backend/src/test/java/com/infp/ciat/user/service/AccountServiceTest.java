@@ -4,6 +4,7 @@ import com.infp.ciat.user.controller.dto.request.SignupRequestDTO;
 import com.infp.ciat.user.entity.Account;
 import com.infp.ciat.user.repository.AccountRepository;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,11 +12,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import javax.transaction.Transactional;
-
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -31,6 +30,12 @@ class AccountServiceTest {
   @Autowired
   PasswordEncoder passwordEncoder;
 
+  @BeforeAll
+  public static void beforeAll() {
+    String jasypt_password = System.getenv("jasypt.encryptor.password");
+    System.setProperty("jasypt.encryptor.password", jasypt_password);
+  }
+
   @AfterEach
   public void aftereach() {
     try {
@@ -39,6 +44,7 @@ class AccountServiceTest {
       // hibernate error 무시
     }
   }
+
 
   @Test
   void 회원가입() {
@@ -63,7 +69,5 @@ class AccountServiceTest {
     assertThat(all.get(0).getEmail()).isEqualTo(email);
     assertThat(passwordEncoder.matches(password, all.get(0).getPassword())).isTrue();
     assertThat(all.get(0).getNickname()).isEqualTo(nickname);
-
   }
-
 }

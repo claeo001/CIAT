@@ -16,7 +16,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/user")
+@RequestMapping("/api/v1/user")
 @Slf4j
 public class AccountController {
     private final AccountService accountService;
@@ -37,7 +37,6 @@ public class AccountController {
      */
     @GetMapping("/success")
     public ResponseEntity<LoginSuccessResponse> login_success(@AuthenticationPrincipal PrincipalDetails user) {
-        log.debug(("AAAa"));
         return new ResponseEntity<>(new LoginSuccessResponse(user.getUsername()), HttpStatus.OK);
     }
 }

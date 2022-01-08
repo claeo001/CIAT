@@ -3,21 +3,57 @@ package com.infp.ciat.config.auth;
 import com.infp.ciat.user.entity.Account;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
-public class PrincipalDetails implements UserDetails {
-
+/***
+ * 인증정보 관리
+ */
+public class PrincipalDetails implements UserDetails, OAuth2User, Serializable {
   private Account account;
+  private Map<String, Object> attributes;
 
   public PrincipalDetails(Account account) {
     this.account = account;
   }
 
-  // account의 권한을 리턴한다.
+  /***
+   * ouath2 회원가입 생성자
+   * @param account
+   * @param attributes
+   */
+  public PrincipalDetails(Account account, Map<String, Object> attributes) {
+    this.attributes = attributes;
+    this.account = account;
+
+  }
+
+  public Account getAccount() {
+    return account;
+  }
+
+  // OAuth2User 타입 Map으로 저장된다.
   @Override
-  public Collection<? extends GrantedAuthority> getAuthorities() {
+  public Map<String, Object> getAttributes() {
+    return attributes; // {id:~~~~, name:~~~~, email: ~~~~}
+  }
+
+
+  @Override
+  public String getName() {
+    return (String) attributes.get("name");
+  }
+
+  /***
+   * role 리턴
+   * @return
+   */
+  @Override
+  public Collection<GrantedAuthority> getAuthorities() {
     Collection<GrantedAuthority> collect = new ArrayList<>();
     collect.add(new GrantedAuthority() {
       @Override
@@ -57,4 +93,5 @@ public class PrincipalDetails implements UserDetails {
   public boolean isEnabled() {
     return true;
   }
+
 }
